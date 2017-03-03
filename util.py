@@ -24,7 +24,7 @@ class util:
     def maxmini(self, depth):
         origTurn = self.whoseTurn
         origBoard = self.board
-
+        print("Depth is :", depth)
         if self.isMaxNode():
             origHuman = self.teamHuman # OG Dict
             maxMoves = [len(self.teamHuman)]
@@ -38,8 +38,8 @@ class util:
             for i in range(0, len(maxMoves)):
                 if depth == self.depthLimit:
                     #NEEDS TO BE CREATED getUtility()
-                    moveValue[i] = self.getUtility((maxMoves[i][0]))
-                    print(maxMoves[i][0])
+                    moveValue[i] = self.getUtility(self.teamHuman[i]['type'], maxMoves[i][0])
+                    print("The Util was found to be:", self.getUtility((maxMoves[i][0])))
 
                 else:
                     for n in range(0, len(maxMoves[i])):
@@ -64,7 +64,7 @@ class util:
             for i in range(0, len(minMoves)):
                 if depth == self.depthLimit:
                     #NEEDS TO BE CREATED getUtility()
-                    moveValue[i] = self.getUtility((minMoves[i][0]))
+                    moveValue[i] = self.getUtility(self.teamDragon[i]['type'], minMoves[i][0])
 
                 else:
                     for n in range(0, len( minMoves[i])):
@@ -151,14 +151,14 @@ class util:
         return validMoves
 
 
-    def getUtility(self, gamePiece):
-        gs = self.board
-        if (gs[(gamePiece)] == 'K'):
-            utilValue = self.kingUtil(gamePiece)
-        elif (gs[(gamePiece)] == 'G'):
-            utilValue = self.guardUtil(gamePiece)
-        elif (gs[(gamePiece)] == 'D'):
-            dragonValue = self.guardUtil(gamePiece)
+    def getUtility(self, gamePiece, local):
+
+        if (gamePiece == 'K'):
+            return self.kingUtil(local)
+        elif (gamePiece == 'G'):
+            return self.guardUtil(local)
+        elif (gamePiece == 'D'):
+            return self.guardUtil(local)
     '''
     def minimax(self):
         """
@@ -299,6 +299,7 @@ class util:
         maxUtil = 0
         enemyUtil = self.enemiesAround(gamePiece)
         allyUtil = self.alliesAround(gamePiece)
+        
         if (allyUtil > enemyUtil and allyUtil > 1):
             maxUtil = allyUtil - enemyUtil
         else:
@@ -313,8 +314,9 @@ class util:
         return(minUtil)
 
     def kingUtil(self, gamePiece):
+        print(gamePiece)
         maxUtil = self.guardUtil(gamePiece)
-        maxUtil += self.endUtil(gamePiece)
+        maxUtil = self.endUtil(gamePiece)
         return (maxUtil)
 
     def enemiesAround(self, gamePiece):

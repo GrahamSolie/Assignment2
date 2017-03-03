@@ -7,7 +7,7 @@ def main():
     prog = u.util('D')
     prog.printBoard()
 
-    print('*DRUM ROLL*',prog.maxmini(1))
+    print('*DRUM ROLL*', prog.maxmini(0))
     '''
     prog.move((2,2),(1,2))
     prog.move((2,1),(3,1))
