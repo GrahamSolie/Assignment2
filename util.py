@@ -39,7 +39,7 @@ class util:
                 if depth == self.depthLimit:
                     #NEEDS TO BE CREATED getUtility()
                     moveValue[i] = self.getUtility(self.teamHuman[i]['type'], maxMoves[i][0])
-                    print("The Util was found to be:", self.getUtility((maxMoves[i][0])))
+                    print("The Util was found to be:", self.getUtility(self.teamHuman[i]['type'], maxMoves[i][0]))
 
                 else:
                     for n in range(0, len(maxMoves[i])):
@@ -149,16 +149,7 @@ class util:
             if (self.legalMove(((gamePiece[0] - 1), (gamePiece[1] + 1)), gamePiece)):
                 validMoves.append((gamePiece[0] - 1, gamePiece[1] + 1))
         return validMoves
-
-
-    def getUtility(self, gamePiece, local):
-
-        if (gamePiece == 'K'):
-            return self.kingUtil(local)
-        elif (gamePiece == 'G'):
-            return self.guardUtil(local)
-        elif (gamePiece == 'D'):
-            return self.guardUtil(local)
+        
     '''
     def minimax(self):
         """
@@ -295,10 +286,23 @@ class util:
 #------------------------------------------------------------------------------------------------------------
 #                                           START OF UTIL FUNCTIONS
 #------------------------------------------------------------------------------------------------------------
-    def guardUtil(self, gamePiece):
+    def getUtility(self, gamePiece, local):
+
+        if (gamePiece == 'K'):
+            return self.kingUtil(gamePiece, local)
+        elif (gamePiece == 'G'):
+            return self.guardUtil(local)
+        elif (gamePiece == 'D'):
+            return self.guardUtil(local)
+
+    def guardUtil(self, gamePiece, local):
         maxUtil = 0
-        enemyUtil = self.enemiesAround(gamePiece)
-        allyUtil = self.alliesAround(gamePiece)
+        enemyUtil = self.enemiesAround(gamePiece, local) * -20
+        allyUtil = self.alliesAround(gamePiece, local) * 10
+        
+        print(enemyUtil)
+        print(allyUtil)
+        
         
         if (allyUtil > enemyUtil and allyUtil > 1):
             maxUtil = allyUtil - enemyUtil
@@ -306,27 +310,28 @@ class util:
             maxUtil = enemyUtil - allyUtil
         return(maxUtil)
 
-    def dragonUtil(self, gamePiece):
+    def dragonUtil(self, gamePiece, local):
         minUtil = 0
-        enemyUtil = self.enemiesAround(gamePiece)
-        allyUtil = self.alliesAround(gamePiece)	* 10
+        enemyUtil = self.enemiesAround(gamePiece, local)
+        allyUtil = self.alliesAround(gamePiece, local)	* 10
         minUtil = enemyUtil + allyUtil
         return(minUtil)
 
-    def kingUtil(self, gamePiece):
+    def kingUtil(self, gamePiece, local):
         print(gamePiece)
-        maxUtil = self.guardUtil(gamePiece)
-        maxUtil = self.endUtil(gamePiece)
+        maxUtil = self.guardUtil(gamePiece, local)
+        maxUtil = self.endUtil(gamePiece, local)
         return (maxUtil)
 
-    def enemiesAround(self, gamePiece):
+    def enemiesAround(self, gamePiece, local):
         gs = self.board
-        if (gs[gamePiece] == 'K' or gs[gamePiece] == 'G'):
+        print(gamePiece)
+        if (gamePiece == 'K' or gamePiece == 'G'):
+            count = 0
             for i in range (0,len(self.teamHuman)):
                 if (self.teamHuman[i]['status'] == True):
-                    count = 0
-                    locationY = self.teamHuman[i]['location'][0]
-                    locationX = self.teamHuman[i]['location'][1]
+                    locationY = local[0]
+                    locationX = local[1]
                     if (locationX - 1 < 0):
                         locationX = 0
                         if ((gs[locationY, locationX]) == 'D'):
@@ -374,12 +379,12 @@ class util:
                             #print(gs[locationX + 1, locationY])
                             #print(locationY, locationX + 1)
                             count +=1
-                    return(count)
+            return(count)
 
-        if (gs[gamePiece] == 'D'):
+        if (gamePiece == 'D'):
+            count = 0
             for i in range (0,len(self.teamDragon)):
-                if (self.teamDragon[i]['status'] == True):
-                    count = 0
+                if (self.teamDragon[i]['status'] == True):                
                     locationY = self.teamDragon[i]['location'][0]
                     locationX = self.teamDragon[i]['location'][1]
                     #print(locationX, locationY)
@@ -441,17 +446,17 @@ class util:
                                 count-=100
                             else:
                                 count-=1
-                    return(count)
+            return(count)
 
 
-    def alliesAround(self, gamePiece):
+    def alliesAround(self, gamePiece, local):
         gs = self.board
-        if (gs[gamePiece] == 'K' or gs[gamePiece] == 'G'):
+        count = 0
+        if (gamePiece == 'K' or gamePiece == 'G'):
             for i in range (0,len(self.teamHuman)):
-                if (self.teamHuman[i]['status'] == True):
-                    count = 0
-                    locationY = self.teamHuman[i]['location'][0]
-                    locationX = self.teamHuman[i]['location'][1]
+                if (self.teamHuman[i]['status'] == True):             
+                    locationY = local[0]
+                    locationX = local[1]
                     if (locationX - 1 < 0):
                         locationX = 0
                         if ((gs[locationY, locationX]) == 'G' or (gs[locationY, locationX]) == 'K'):
@@ -499,12 +504,12 @@ class util:
                             #print(gs[locationX + 1, locationY])
                             #print(locationY, locationX + 1)
                             count +=1
-                    return(count)
+            return(count)
 
-        if (gs[gamePiece] == 'D'):
+        if (gamePiece == 'D'):
+            count = 0
             for i in range (0,len(self.teamDragon)):
-                if (self.teamDragon[i]['status'] == True):
-                    count = 0
+                if (self.teamDragon[i]['status'] == True):                  
                     locationY = self.teamDragon[i]['location'][0]
                     locationX = self.teamDragon[i]['location'][1]
                     if (locationX - 1 < 0):
@@ -554,12 +559,12 @@ class util:
                             #print(gs[locationX + 1, locationY])
                             #print(locationY, locationX + 1)
                             count +=1
-                    return(count)
+            return(count)
 
-    def endUtil(self, gamePiece):
+    def endUtil(self, gamePiece, local):
         gs = self.board
-        if (gs[gamePiece] == 'K'):
-            locationY = self.teamHuman[0]['location'][0]
+        if (gamePiece == 'K'):
+            locationY = local[0]
             distanceFromEnd = 4 - locationY
 
             if (distanceFromEnd == 1):
@@ -802,7 +807,7 @@ class util:
                     return False
         #illegal movement
         else:
-            print("\n" + "Illegal Move")
+            #print("\n" + "Illegal Move")
             return False
 
     def legalJump(self, location, gamePiece):
