@@ -11,8 +11,8 @@ class util:
         self.transpositionTable = dict()
         self.cachedWin = False  # set to True in winFor() if
         self.cachedWinner = None
-        self.depthLimit = 2
-        
+        self.depthLimit = 1
+
 #------------------------------------------------------------------------------------------------------------
 #                                           START OF MINIMAX FUNCTIONS
 #------------------------------------------------------------------------------------------------------------
@@ -23,6 +23,7 @@ class util:
 # ** SKELETON OF FUNCTIONS TAKEN FROM CODE SUPPLIED BY MICHAEL HORSCH **
     def maxmini(self, depth):
         origTurn = self.whoseTurn
+        origBoard = self.board
 
         if self.isMaxNode():
             origHuman = self.teamHuman # OG Dict
@@ -41,10 +42,11 @@ class util:
                     print(maxMoves[i][0])
 
                 else:
-                    for n in range(len(0, maxMoves[i])):
-                        self.teamHuman[i]['location'] = maxMoves[i][n]
-                        self.whoseTurn = togglePlayer(self, origTurn)
-                        moveValue[i] = maxmini(depth+1)[i]
+                    for n in range(0, len(maxMoves[i])):
+                        self.move(maxMoves[i][n], self.teamHuman[i]['location'])
+                        self.whoseTurn = self.togglePlayer(origTurn)
+                        moveValue[i] = self.maxmini(depth+1)[i]
+                        self.board = origBoard
 
             maxMovePair = list(zip(maxMoves, moveValue))
             return [self.argmax(maxMovePair)]
@@ -66,9 +68,10 @@ class util:
 
                 else:
                     for n in range(0, len( minMoves[i])):
-                        self.teamDragon[i]['location'] = minMoves[i][n]
+                        self.move(minMoves[i][n], self.teamDragon[i]['location'])
                         self.whoseTurn = self.togglePlayer(origTurn)
                         moveValue[i] = self.maxmini(depth+1)[i]
+                        self.board = origBoard
 
             minMovePair = list(zip(minMoves, moveValue))
             return [self.argmin(minMovePair)]
@@ -76,11 +79,11 @@ class util:
         else:
             print("The unthinkable has happened. Minimax is broken.")
             return None
-        
+
     def allLegalMoves(self, gamePiece):
         validMoves = []
         gs = self.board
-        
+
         #check the kings moves
         if (gs[gamePiece] == 'K'):
             if (self.legalMove(((gamePiece[0] + 0), (gamePiece[1] + 1)), gamePiece)):
@@ -97,25 +100,25 @@ class util:
                     validMoves.append((gamePiece[0] + 0, gamePiece[1] + 1)) # can move right
             except KeyError: # if out of range
                 print("")
-                
-            try:  
+
+            try:
                 if (gs[(gamePiece[0] + 0), (gamePiece[1] - 1)] == 'G' and gs[(gamePiece[0] + 0), (gamePiece[0] - 2)] == ' '):
                     validMoves.append((gamePiece[0] + 0, gamePiece[1] - 1)) # can move left
             except KeyError: # if out of range
                 print("")
-                
+
             try:
                 if (gs[(gamePiece[0] + 1), (gamePiece[1] + 0)] == 'G' and gs[(gamePiece[0] + 2), (gamePiece[0] + 0)] == ' '):
                     validMoves.append((gamePiece[0] + 1, gamePiece[1] + 0)) # can move down
             except KeyError: # if out of range
                 print("")
-            
-            try:    
+
+            try:
                 if (gs[(gamePiece[0] - 1), (gamePiece[1] + 0)] == 'G' and gs[(gamePiece[0] - 2), (gamePiece[0] + 0)] == ' '):
                     validMoves.append((gamePiece[0] - 1, gamePiece[1] + 0)) # can move up
             except KeyError: # if out of range
                 print("")
-                 
+
         #check a guards moves
         elif (gs[gamePiece] == 'G'):
             if (self.legalMove(((gamePiece[0] + 0), (gamePiece[1] + 1)), gamePiece)):
@@ -138,16 +141,16 @@ class util:
                 validMoves.append((gamePiece[0] - 1, gamePiece[1] + 0)) # can move up
             #diagonal alley
             if (self.legalMove(((gamePiece[0] + 1), (gamePiece[1] + 1)), gamePiece)):
-                validMoves.append((gamePiece[0] + 1, gamePiece[1] + 1)) 
+                validMoves.append((gamePiece[0] + 1, gamePiece[1] + 1))
             if (self.legalMove(((gamePiece[0] + 1), (gamePiece[1] - 1)), gamePiece)):
-                validMoves.append((gamePiece[0] + 1, gamePiece[1] - 1)) 
+                validMoves.append((gamePiece[0] + 1, gamePiece[1] - 1))
             if (self.legalMove(((gamePiece[0] - 1), (gamePiece[1] - 1)), gamePiece)):
-                validMoves.append((gamePiece[0] - 1, gamePiece[1] - 1)) 
+                validMoves.append((gamePiece[0] - 1, gamePiece[1] - 1))
             if (self.legalMove(((gamePiece[0] - 1), (gamePiece[1] + 1)), gamePiece)):
-                validMoves.append((gamePiece[0] - 1, gamePiece[1] + 1))   
+                validMoves.append((gamePiece[0] - 1, gamePiece[1] + 1))
         return validMoves
-        
-        
+
+
     def getUtility(self, gamePiece):
         gs = self.board
         if (gs[(gamePiece)] == 'K'):
@@ -187,7 +190,7 @@ class util:
         transpositionTable[s] = u,m  # store the move and the utility in the tpt
         return u,m
     '''
-    
+
     def argmax(self, ns):
         """
         find the highest utility,move pair
@@ -288,7 +291,7 @@ class util:
             return 'D'
         else:
             return 'H'
-            
+
 #------------------------------------------------------------------------------------------------------------
 #                                           START OF UTIL FUNCTIONS
 #------------------------------------------------------------------------------------------------------------
@@ -300,20 +303,20 @@ class util:
             maxUtil = allyUtil - enemyUtil
         else:
             maxUtil = enemyUtil - allyUtil
-        return(maxUtil)       	
-	
+        return(maxUtil)
+
     def dragonUtil(self, gamePiece):
-        minUtil = 0	
+        minUtil = 0
         enemyUtil = self.enemiesAround(gamePiece)
-        allyUtil = self.alliesAround(gamePiece)	* 10	
+        allyUtil = self.alliesAround(gamePiece)	* 10
         minUtil = enemyUtil + allyUtil
         return(minUtil)
-		
+
     def kingUtil(self, gamePiece):
         maxUtil = self.guardUtil(gamePiece)
         maxUtil += self.endUtil(gamePiece)
         return (maxUtil)
-    
+
     def enemiesAround(self, gamePiece):
         gs = self.board
         if (gs[gamePiece] == 'K' or gs[gamePiece] == 'G'):
@@ -370,7 +373,7 @@ class util:
                             #print(locationY, locationX + 1)
                             count +=1
                     return(count)
-                    
+
         if (gs[gamePiece] == 'D'):
             for i in range (0,len(self.teamDragon)):
                 if (self.teamDragon[i]['status'] == True):
@@ -383,14 +386,14 @@ class util:
                         locationX = 0
                         if ((gs[locationY, locationX]) == 'G' or (gs[locationY, locationX]) == 'K'):
                             if (gs[locationY, locationX] == 'K'):
-                                count-=100                            
-                            else:             
+                                count-=100
+                            else:
                                 count-=1
                     else:
                         if ((gs[locationY, locationX - 1]) == 'G' or (gs[locationY, locationX - 1]) == 'K'):
                             if (gs[locationY, locationX - 1] == 'K'):
                                 count-=100
-                            else:             
+                            else:
                                 count-=1
 
                     if (locationY - 1 < 0):
@@ -398,13 +401,13 @@ class util:
                         if ((gs[locationY, locationX]) == 'G' or (gs[locationY, locationX]) == 'K'):
                             if (gs[locationY, locationX] == 'K'):
                                 count-=100
-                            else:             
+                            else:
                                 count-=1
                     else:
                         if ((gs[locationY - 1, locationX]) == 'G' or (gs[locationY - 1, locationX]) == 'K'):
                             if (gs[locationY - 1 , locationX] == 'K'):
                                 count-=100
-                            else:             
+                            else:
                                 count-=1
 
                     if (locationX + 1 > 4):
@@ -414,13 +417,13 @@ class util:
                                 count-=100
                                         #print (gs[locationX, locationY])
                                         #print(locationY - 1, locationX)
-                            else:             
+                            else:
                                 count-=1
                     else:
                         if ((gs[locationY, locationX + 1]) == 'G' or (gs[locationY, locationX + 1]) == 'K'):
                             if (gs[locationY, locationX + 1] == 'K'):
                                 count-=100
-                            else:             
+                            else:
                                 count-=1
 
                     if (locationY + 1 > 4):
@@ -428,17 +431,17 @@ class util:
                         if ((gs[locationY, locationX]) == 'G' or (gs[locationY, locationX]) == 'K'):
                             if (gs[locationY, locationX] == 'K'):
                                 count-=100
-                            else:             
+                            else:
                                 count-=1
                     else:
                         if ((gs[locationY + 1, locationX]) == 'G' or (gs[locationY + 1, locationX]) == 'K'):
                             if (gs[locationY + 1, locationX] == 'K'):
                                 count-=100
-                            else:             
+                            else:
                                 count-=1
-                    return(count)        
-                    
-                    
+                    return(count)
+
+
     def alliesAround(self, gamePiece):
         gs = self.board
         if (gs[gamePiece] == 'K' or gs[gamePiece] == 'G'):
@@ -494,8 +497,8 @@ class util:
                             #print(gs[locationX + 1, locationY])
                             #print(locationY, locationX + 1)
                             count +=1
-                    return(count)    
-                    
+                    return(count)
+
         if (gs[gamePiece] == 'D'):
             for i in range (0,len(self.teamDragon)):
                 if (self.teamDragon[i]['status'] == True):
@@ -550,13 +553,13 @@ class util:
                             #print(locationY, locationX + 1)
                             count +=1
                     return(count)
-    
+
     def endUtil(self, gamePiece):
         gs = self.board
         if (gs[gamePiece] == 'K'):
-            locationY = self.teamHuman[0]['location'][0]        
+            locationY = self.teamHuman[0]['location'][0]
             distanceFromEnd = 4 - locationY
-            
+
             if (distanceFromEnd == 1):
                 return(100)
             if (distanceFromEnd == 2):
@@ -564,10 +567,10 @@ class util:
             if (distanceFromEnd == 3):
                 return(40)
             if (distanceFromEnd == 4):
-                return(20)            
-            
-            
-            
+                return(20)
+
+
+
 #------------------------------------------------------------------------------------------------------------
 #                                           END OF MINIMAX/UTIL FUNCTIONS
 #------------------------------------------------------------------------------------------------------------
@@ -684,8 +687,8 @@ class util:
                 self.teamDragon[i]['location'] = where
                 return 1
         return 0
-        
-        
+
+
     def move(self, where, who):
         """
         :param where: end location of place to be moved to by piece
@@ -701,7 +704,7 @@ class util:
         self.takeOver(where)
         self.printBoard()
         return gs
-        
+
     def move2(self, where, who):
         """
         :param where: end location of place to be moved to by piece
@@ -740,12 +743,12 @@ class util:
         :return: True if is legal move, False otherwise
         """
         gs = self.board
-        
+
         try:
             gs[location] == ' '
         except KeyError: # if out of range
             return False
-            
+
         #moving to a blank space
         if (gs[location] == ' '):
             #moving the guard (humanoid player)
@@ -774,7 +777,7 @@ class util:
                     location == ((gamePiece[0] - 1), (gamePiece[1] + 1))):      #move diagonal up right
                         return True
             else:
-                print("\n" + "Illegal Move")
+                #print("\n" + "Illegal Move")
                 return False
         #jumping a guard with the king -- this will use a recursive call to check an additional space
         #**If a player tries to jump a guard by moving the king onto the guard -- Slighty redundant.
@@ -799,7 +802,7 @@ class util:
         else:
             print("\n" + "Illegal Move")
             return False
-            
+
     def legalJump(self, location, gamePiece):
         """
         :param location: location to be moved to by piece
@@ -811,7 +814,7 @@ class util:
             gs[location] == ' '
         except KeyError: # if out of range
             return False
-            
+
         #moving to a blank space
         if (gs[location] == ' '):
             #move the king over the guard -- how most players would try (humanoid player)
