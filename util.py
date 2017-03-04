@@ -29,19 +29,19 @@ class util:
             origHuman = self.teamHuman # OG Dict
             maxMoves = [None] * len(self.teamHuman)
             moveValue = [0] * len(self.teamHuman)# for util
-
+            maxMovePair = [0] * len(self.teamHuman)
             for i in range(0, len(maxMoves)):
                 #NEEDS TO BE CREATED allLegalMoves
                 # make allLegalMoves return a list, for loop through the returned list and add to maxMove
-                maxMoves[i] = self.allLegalMoves(self.teamHuman[i]['location'])
+                maxMoves[i] = (self.teamHuman[i]['location'], self.allLegalMoves(self.teamHuman[i]['location']))
 
-            print("MaxMoves: ", maxMoves)
-            for i in range(0, len(maxMoves[0])):
+
+            for i in range(0, len(maxMoves)):
                 if depth == self.depthLimit:
-                    #NEEDS TO BE CREATED getUtility()
-                    moveValue[i] = self.getUtility(self.teamHuman[i]['type'], maxMoves[0][i])
-                    print("The Human Util was found to be:", self.getUtility(self.teamHuman[i]['type'], maxMoves[0][i]))
-
+                    for j in range(0, len(maxMoves[i][1])):
+                        moveValue[j] = ((maxMoves[i][1][j]), self.getUtility(self.teamHuman[i]['type'], maxMoves[i][1][j]))
+                        print("The Human Util was found to be:", maxMoves[i][0], moveValue[j])
+                    maxMovePair[i] = (maxMoves[i][0] , moveValue)
                 else:
                     for n in range(0, len(maxMoves[0][i])):
                         self.move(maxMoves[i][n], self.teamHuman[i]['location'])
@@ -56,23 +56,21 @@ class util:
             origDragon = self.teamDragon
             origTurn = self.whoseTurn
             minMoves = [None] * self.activeDragon()
-            moveValue = [0] * self.activeDragon()
+            moveValue = [0] * 8 
             minMovePair = [((0,0), 0)] * len(self.teamDragon)
             print("Active Dragons : ", self.activeDragon())
             for i in range(0, len(minMoves)):
+
                 #NEEDS TO BE CREATED allLegalMoves
-                minMoves[i] = self.allLegalMoves(self.teamDragon[i]['location'])
+                minMoves[i] = (self.teamDragon[i]['location'], self.allLegalMoves(self.teamDragon[i]['location']))
 
-            print("Len MinMoves: ", len(minMoves[0]))
-            for i in range(0, len(minMoves[0])):
-                print("Depth Being Checked:", depth, "Found to be", depth == self.depthLimit)
+            for i in range(0, len(minMoves)):
                 if depth == self.depthLimit:
-                    #NEEDS TO BE CREATED getUtility()
-                    moveValue[i] = self.getUtility(self.teamDragon[i]['type'], minMoves[0][i])
-                    print("The Dragon Util was found to be:", self.getUtility(self.teamDragon[i]['type'] , minMoves[0][i]))
-
+                    for j in range(0, len(minMoves[i][1])):
+                        moveValue[j] = ((minMoves[i][1][j]), self.getUtility(self.teamDragon[i]['type'], minMoves[i][1][j]))
+                        print("The dragon Util was found to be:", minMoves[i][0], moveValue[j])
+                    minMovePair[i] = (minMoves[i][0] , moveValue)
                 else:
-                    print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHH:", minMoves)
                     for n in range(0, len(minMoves)):
                         self.move(minMoves[n][i], self.teamDragon[i]['location'])
                         self.togglePlayer()
