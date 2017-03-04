@@ -11,7 +11,7 @@ class util:
         self.transpositionTable = dict()
         self.cachedWin = False  # set to True in winFor() if
         self.cachedWinner = None
-        self.depthLimit = 1
+        self.depthLimit = 4
 
 #------------------------------------------------------------------------------------------------------------
 #                                           START OF MINIMAX FUNCTIONS
@@ -291,9 +291,9 @@ class util:
         if (gamePiece == 'K'):
             return self.kingUtil(gamePiece, local)
         elif (gamePiece == 'G'):
-            return self.guardUtil(local)
+            return self.guardUtil(gamePiece, local)
         elif (gamePiece == 'D'):
-            return self.guardUtil(local)
+            return self.guardUtil(gamePiece, local)
 
     def guardUtil(self, gamePiece, local):
         maxUtil = 0
