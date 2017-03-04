@@ -49,14 +49,14 @@ class util:
                         moveValue[i] = self.minimax(depth+1)
                         self.board = origBoard
 
-            maxMovePair = list(zip(maxMoves, moveValue))
+
             return [self.argmax(maxMovePair)]
 
         elif self.isMinNode():
             origDragon = self.teamDragon
             origTurn = self.whoseTurn
             minMoves = [None] * self.activeDragon()
-            moveValue = [0] * 8 
+            moveValue = [0] * (self.activeDragon() + 8)
             minMovePair = [((0,0), 0)] * len(self.teamDragon)
             print("Active Dragons : ", self.activeDragon())
             for i in range(0, len(minMoves)):
@@ -71,13 +71,14 @@ class util:
                         print("The dragon Util was found to be:", minMoves[i][0], moveValue[j])
                     minMovePair[i] = (minMoves[i][0] , moveValue)
                 else:
-                    for n in range(0, len(minMoves)):
-                        self.move(minMoves[n][i], self.teamDragon[i]['location'])
+                    for n in range(0, len(minMoves[i][1])):
+                        print("cunts: ",minMoves[i][1][2])
+                        self.move(minMoves[i][0], minMoves[i][1][n])
                         self.togglePlayer()
                         print("Length of moveValue:", len(moveValue))
 
                         moveValue[i] = self.minimax(depth+1)
-                        minMovePair[i] = (minMoves[n][i], moveValue[n])
+                        minMovePair[i] = (minMoves[i], moveValue[n])
                         self.board = origBoard
             print("utilities ", moveValue)
             return [self.argmin(minMovePair)]
@@ -168,26 +169,35 @@ class util:
         """
         find the highest utility,move pair
         :param ns: a list of utility,move pairs
-        :return:  the utility,move pair with the highest utility
+        :return:  the move,utility pair with the highest utility
         """
-        maxv,maxm = ns[0]
-        for v,m in ns:
-            if v > maxv:
-                maxv,maxm = v,m
-        return maxv,maxm
-
+        if (ns != None):
+            bestMaxMove = ((0,0),0)
+            for i in range(0, len(ns)):
+                moveList = ns[i][1]
+                for j in range(0, len(moveList)):
+                    if (bestMaxMove[1] < moveList[j][1]):
+                        bestMaxMove = moveList[j]
+            return bestMaxMove
+        else:
+            return None
 
     def argmin(self, ns):
         """
         find the lowest utility,move pair
         :param ns: a list of utility,move pairs
-        :return:  the utility,move pair with the lowest utility
+        :return:  the move,utility pair with the lowest utility
         """
-        minv,minm = ns[0]
-        for v,m in ns:
-            if v < minv:
-                minv,minm = v,m
-        return minv,minm
+        if (ns != None):
+            bestMinMove = ((0,0),0)
+            for i in range(0, len(ns)):
+                moveList = ns[i][1]
+                for j in range(0, len(moveList)):
+                    if (bestMinMove[1] > moveList[j][1]):
+                        bestMinMove = moveList[j]
+            return bestMinMove
+        else:
+            return None
 
     def isMinNode(self):
         """ *** needed for search ***
