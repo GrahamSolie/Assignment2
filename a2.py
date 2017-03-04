@@ -89,11 +89,14 @@ def play(prog):
     i = 0
     while prog.utility() == 0 and i < 50:
             mmResult = prog.minimax(startTurn)
-            prog.move(mmResult[1], mmResult[0])
+            print(mmResult)
             i = i+1
-    if prog.utility():
+            prog.togglePlayer()
+    if prog.utility() == 1:
         print("Humans Win!")
-    else:
+    elif prog.utility() == -1:
         print("Dragons Win!")
+    else:
+        print("Draw")
 
 main()

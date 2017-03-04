@@ -11,7 +11,7 @@ class util:
         self.transpositionTable = dict()
         self.cachedWin = False  # set to True in winFor() if
         self.cachedWinner = None
-        self.depthLimit = 4
+        self.depthLimit = 1
 
 #------------------------------------------------------------------------------------------------------------
 #                                           START OF MINIMAX FUNCTIONS
@@ -27,25 +27,26 @@ class util:
         print("Depth is :", depth)
         if self.isMaxNode():
             origHuman = self.teamHuman # OG Dict
-            maxMoves = [len(self.teamHuman)]
-            moveValue = [len(self.teamHuman)] # for util
+            maxMoves = [None] * len(self.teamHuman)
+            moveValue = [0] * len(self.teamHuman)# for util
 
             for i in range(0, len(maxMoves)):
                 #NEEDS TO BE CREATED allLegalMoves
                 # make allLegalMoves return a list, for loop through the returned list and add to maxMove
                 maxMoves[i] = self.allLegalMoves(self.teamHuman[i]['location'])
 
-            for i in range(0, len(maxMoves)):
+            print("MaxMoves: ", maxMoves)
+            for i in range(0, len(maxMoves[0])):
                 if depth == self.depthLimit:
                     #NEEDS TO BE CREATED getUtility()
-                    moveValue[i] = self.getUtility(self.teamHuman[i]['type'], maxMoves[i][0])
-                    print("The Util was found to be:", self.getUtility(self.teamHuman[i]['type'], maxMoves[i][0]))
+                    moveValue[i] = self.getUtility(self.teamHuman[i]['type'], maxMoves[0][i])
+                    print("The Human Util was found to be:", self.getUtility(self.teamHuman[i]['type'], maxMoves[0][i]))
 
                 else:
-                    for n in range(0, len(maxMoves[i])):
+                    for n in range(0, len(maxMoves[0][i])):
                         self.move(maxMoves[i][n], self.teamHuman[i]['location'])
-                        self.togglePlayer()
-                        moveValue[i] = self.minimax(depth+1)[i]
+                        print("Toggle:", self.togglePlayer())
+                        moveValue[i] = self.minimax(depth+1)
                         self.board = origBoard
 
             maxMovePair = list(zip(maxMoves, moveValue))
@@ -54,27 +55,33 @@ class util:
         elif self.isMinNode():
             origDragon = self.teamDragon
             origTurn = self.whoseTurn
-            minMoves = [len(self.teamDragon)]
-            moveValue = [len(self.teamDragon)]
-
+            minMoves = [None] * self.activeDragon()
+            moveValue = [0] * self.activeDragon()
+            minMovePair = [((0,0), 0)] * len(self.teamDragon)
+            print("Active Dragons : ", self.activeDragon())
             for i in range(0, len(minMoves)):
                 #NEEDS TO BE CREATED allLegalMoves
                 minMoves[i] = self.allLegalMoves(self.teamDragon[i]['location'])
 
-            for i in range(0, len(minMoves)):
+            print("Len MinMoves: ", len(minMoves[0]))
+            for i in range(0, len(minMoves[0])):
                 print("Depth Being Checked:", depth, "Found to be", depth == self.depthLimit)
                 if depth == self.depthLimit:
                     #NEEDS TO BE CREATED getUtility()
-                    moveValue[i] = self.getUtility(self.teamDragon[i]['type'], minMoves[i][0])
+                    moveValue[i] = self.getUtility(self.teamDragon[i]['type'], minMoves[0][i])
+                    print("The Dragon Util was found to be:", self.getUtility(self.teamDragon[i]['type'] , minMoves[0][i]))
 
                 else:
-                    for n in range(0, len( minMoves[i])):
-                        self.move(minMoves[i][n], self.teamDragon[i]['location'])
+                    print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHH:", minMoves)
+                    for n in range(0, len(minMoves)):
+                        self.move(minMoves[n][i], self.teamDragon[i]['location'])
                         self.togglePlayer()
-                        moveValue[i] = self.minimax(depth+1)[i]
-                        self.board = origBoard
+                        print("Length of moveValue:", len(moveValue))
 
-            minMovePair = list(zip(minMoves, moveValue))
+                        moveValue[i] = self.minimax(depth+1)
+                        minMovePair[i] = (minMoves[n][i], moveValue[n])
+                        self.board = origBoard
+            print("utilities ", moveValue)
             return [self.argmin(minMovePair)]
 
         else:
@@ -150,6 +157,14 @@ class util:
             if (self.legalMove(((gamePiece[0] - 1), (gamePiece[1] + 1)), gamePiece)):
                 validMoves.append((gamePiece[0] - 1, gamePiece[1] + 1))
         return validMoves
+
+
+    def activeDragon(self):
+        numDragons = 0
+        for i in range(0, len(self.teamDragon)):
+            if self.teamDragon[i]['status']:
+                numDragons = numDragons + 1
+        return numDragons
 
     def argmax(self, ns):
         """
@@ -251,7 +266,7 @@ class util:
             self.whoseTurn = 'D'
             return 'D'
         else:
-            self.whoseTurn = 'D'
+            self.whoseTurn = 'H'
             return 'H'
 
 #------------------------------------------------------------------------------------------------------------
@@ -260,7 +275,7 @@ class util:
     def getUtility(self, gamePiece, local):
 
         if (gamePiece == 'K'):
-            return self.gaurdUtil(gamePiece, local)
+            return self.guardUtil(gamePiece, local)
         elif (gamePiece == 'G'):
             return self.guardUtil(gamePiece, local)
         elif (gamePiece == 'D'):
