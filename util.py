@@ -305,49 +305,33 @@ class util:
                     if (locationX - 1 < 0):
                         locationX = 0
                         if ((gs[locationY, locationX]) == 'D'):
-                            #print (gs[locationX, locationY])
-                            #print(locationY - 1, locationX)
                             count +=1
                     else:
                         if ((gs[locationY, locationX - 1]) == 'D'):
-                            #print (gs[locationX, locationY])
-                            #print(locationY - 1, locationX)
                             count +=1
 
                     if (locationY - 1 < 0):
                         locationY = 0
                         if ((gs[locationY, locationX]) == 'D'):
-                           # print(gs[locationX - 1, locationY])
-                            #print(locationY, locationX - 1)
                             count +=1
                     else:
                         if ((gs[locationY -1, locationX]) == 'D'):
-                            #print(gs[locationX - 1, locationY])
-                            #print(locationY, locationX - 1)
                             count +=1
 
                     if (locationX + 1 > 4):
                         locationX = 4
                         if ((gs[locationY, locationX]) == 'D'):
-                            #print(gs[locationX, locationY + 1])
-                            #print(locationY + 1, locationX)
                             count +=1
                     else:
                         if ((gs[locationY, locationX + 1]) == 'D'):
-                            #print(gs[locationX, locationY + 1])
-                            #print(locationY + 1, locationX)
                             count +=1
 
                     if (locationY + 1 > 4):
                         locationY = 4
                         if ((gs[locationY, locationX]) == 'D'):
-                            #print(gs[locationX + 1, locationY])
-                            #print(locationY, locationX + 1)
                             count +=1
                     else:
                         if ((gs[locationY + 1, locationX]) == 'D'):
-                            #print(gs[locationX + 1, locationY])
-                            #print(locationY, locationX + 1)
                             count +=1
             return(count)
 
@@ -357,8 +341,6 @@ class util:
                 if (self.teamDragon[i]['status'] == True):
                     locationY = local[0]
                     locationX = local[1]
-                    #print(locationX, locationY)
-
                     if (locationX - 1 < 0):
                         locationX = 0
                         if ((gs[locationY, locationX]) == 'G' or (gs[locationY, locationX]) == 'K'):
@@ -392,8 +374,6 @@ class util:
                         if ((gs[locationY, locationX]) == 'G' or (gs[locationY, locationX]) == 'K'):
                             if (gs[locationY, locationX] == 'K'):
                                 count-=100
-                                        #print (gs[locationX, locationY])
-                                        #print(locationY - 1, locationX)
                             else:
                                 count-=1
                     else:
@@ -430,49 +410,33 @@ class util:
                     if (locationX - 1 < 0):
                         locationX = 0
                         if ((gs[locationY, locationX]) == 'G' or (gs[locationY, locationX]) == 'K'):
-                            #print (gs[locationX, locationY])
-                            #print(locationY - 1, locationX)
                             count +=1
                     else:
                         if ((gs[locationY, locationX - 1]) == 'G' or (gs[locationY, locationX - 1]) == 'K'):
-                            #print (gs[locationX, locationY])
-                            #print(locationY - 1, locationX)
                             count +=1
 
                     if (locationY - 1 < 0):
                         locationY = 0
                         if ((gs[locationY, locationX]) == 'G' or (gs[locationY, locationX]) == 'K'):
-                            #print(gs[locationX - 1, locationY])
-                            #print(locationY, locationX - 1)
                             count +=1
                     else:
                         if ((gs[locationY - 1, locationX]) == 'G' or (gs[locationY - 1, locationX]) == 'K'):
-                            #print(gs[locationX - 1, locationY])
-                            #print(locationY, locationX - 1)
                             count +=1
 
                     if (locationX + 1 > 4):
                         locationX = 4
                         if ((gs[locationY, locationX]) == 'G' or (gs[locationY, locationX]) == 'K'):
-                            #print(gs[locationX, locationY + 1])
-                            #print(locationY + 1, locationX)
                             count +=1
                     else:
                         if ((gs[locationY, locationX + 1]) == 'G' or (gs[locationY, locationX + 1]) == 'K'):
-                            #print(gs[locationX, locationY + 1])
-                            #print(locationY + 1, locationX)
                             count +=1
 
                     if (locationY + 1 > 4):
                         locationY = 4
                         if ((gs[locationY, locationX]) == 'G' or (gs[locationY, locationX]) == 'K'):
-                            #print(gs[locationX + 1, locationY])
-                            #print(locationY, locationX + 1)
                             count +=1
                     else:
                         if ((gs[locationY + 1, locationX]) == 'G' or (gs[locationY + 1, locationX]) == 'K'):
-                            #print(gs[locationX + 1, locationY])
-                            #print(locationY, locationX + 1)
                             count +=1
             return(count)
 
@@ -485,49 +449,33 @@ class util:
                     if (locationX - 1 < 0):
                         locationX = 0
                         if ((gs[locationY, locationX]) == 'D'):
-                            #print (gs[locationX, locationY])
-                            #print(locationY - 1, locationX)
                             count +=1
                     else:
                         if ((gs[locationY, locationX - 1]) == 'D'):
-                            #print (gs[locationX, locationY])
-                            #print(locationY - 1, locationX)
                             count +=1
 
                     if (locationY - 1 < 0):
                         locationY = 0
                         if ((gs[locationY, locationX]) == 'D'):
-                           # print(gs[locationX - 1, locationY])
-                            #print(locationY, locationX - 1)
                             count +=1
                     else:
                         if ((gs[locationY -1, locationX]) == 'D'):
-                            #print(gs[locationX - 1, locationY])
-                            #print(locationY, locationX - 1)
                             count +=1
 
                     if (locationX + 1 > 4):
                         locationX = 4
                         if ((gs[locationY, locationX]) == 'D'):
-                            #print(gs[locationX, locationY + 1])
-                            #print(locationY + 1, locationX)
                             count +=1
                     else:
                         if ((gs[locationY, locationX + 1]) == 'D'):
-                            #print(gs[locationX, locationY + 1])
-                            #print(locationY + 1, locationX)
                             count +=1
 
                     if (locationY + 1 > 4):
                         locationY = 4
                         if ((gs[locationY, locationX]) == 'D'):
-                            #print(gs[locationX + 1, locationY])
-                            #print(locationY, locationX + 1)
                             count +=1
                     else:
                         if ((gs[locationY + 1, locationX]) == 'D'):
-                            #print(gs[locationX + 1, locationY])
-                            #print(locationY, locationX + 1)
                             count +=1
             return(count)
 
@@ -826,49 +774,33 @@ class util:
                     if (locationX - 1 < 0):
                         locationX = 0
                         if ((gs[locationY, locationX]) == 'D'):
-                            #print (gs[locationX, locationY])
-                            #print(locationY - 1, locationX)
                             count +=1
                     else:
                         if ((gs[locationY, locationX - 1]) == 'D'):
-                            #print (gs[locationX, locationY])
-                            #print(locationY - 1, locationX)
                             count +=1
 
                     if (locationY - 1 < 0):
                         locationY = 0
                         if ((gs[locationY, locationX]) == 'D'):
-                           # print(gs[locationX - 1, locationY])
-                            #print(locationY, locationX - 1)
                             count +=1
                     else:
                         if ((gs[locationY -1, locationX]) == 'D'):
-                            #print(gs[locationX - 1, locationY])
-                            #print(locationY, locationX - 1)
                             count +=1
 
                     if (locationX + 1 > 4):
                         locationX = 4
                         if ((gs[locationY, locationX]) == 'D'):
-                            #print(gs[locationX, locationY + 1])
-                            #print(locationY + 1, locationX)
                             count +=1
                     else:
                         if ((gs[locationY, locationX + 1]) == 'D'):
-                            #print(gs[locationX, locationY + 1])
-                            #print(locationY + 1, locationX)
                             count +=1
 
                     if (locationY + 1 > 4):
                         locationY = 4
                         if ((gs[locationY, locationX]) == 'D'):
-                            #print(gs[locationX + 1, locationY])
-                            #print(locationY, locationX + 1)
                             count +=1
                     else:
                         if ((gs[locationY + 1, locationX]) == 'D'):
-                            #print(gs[locationX + 1, locationY])
-                            #print(locationY, locationX + 1)
                             count +=1
                     if (count >2):
                         print("Taken")
@@ -890,54 +822,36 @@ class util:
                     count = 0
                     locationY = self.teamDragon[i]['location'][0]
                     locationX = self.teamDragon[i]['location'][1]
-                    #print(locationX, locationY)
-
                     if (locationX - 1 < 0):
                         locationX = 0
                         if ((gs[locationY, locationX]) == 'G' or (gs[locationY, locationX]) == 'K'):
-                            #print (gs[locationX, locationY])
-                            #print(locationY - 1, locationX)
                             count +=1
                     else:
                         if ((gs[locationY, locationX - 1]) == 'G' or (gs[locationY, locationX - 1]) == 'K'):
-                            #print (gs[locationX, locationY])
-                            #print(locationY - 1, locationX)
                             count +=1
 
                     if (locationY - 1 < 0):
                         locationY = 0
                         if ((gs[locationY, locationX]) == 'G' or (gs[locationY, locationX]) == 'K'):
-                           # print(gs[locationX - 1, locationY])
-                            #print(locationY, locationX - 1)
                             count +=1
                     else:
                         if ((gs[locationY - 1, locationX]) == 'G' or (gs[locationY - 1, locationX]) == 'K'):
-                            #print(gs[locationX - 1, locationY])
-                            #print(locationY, locationX - 1)
                             count +=1
 
                     if (locationX + 1 > 3):
                         locationX = 3
                         if ((gs[locationY, locationX]) == 'G' or (gs[locationY, locationX]) == 'K'):
-                            #print(gs[locationX, locationY + 1])
-                            #print(locationY + 1, locationX)
                             count +=1
                     else:
                         if ((gs[locationY, locationX + 1]) == 'G' or (gs[locationY, locationX + 1]) == 'K'):
-                            #print(gs[locationX, locationY + 1])
-                            #print(locationY + 1, locationX)
                             count +=1
 
                     if (locationY + 1 > 3):
                         locationY = 3
                         if ((gs[locationY, locationX]) == 'G' or (gs[locationY, locationX]) == 'K'):
-                            #print(gs[locationX + 1, locationY])
-                            #print(locationY, locationX + 1)
                             count +=1
                     else:
                         if ((gs[locationY + 1, locationX]) == 'G' or (gs[locationY + 1, locationX]) == 'K'):
-                            #print(gs[locationX + 1, locationY])
-                            #print(locationY, locationX + 1)
                             count +=1
 
                     if (count >1):
@@ -955,49 +869,33 @@ class util:
                 if (locationX - 1 < 0):
                     locationX = 0
                     if ((gs[locationY, locationX]) == 'D'):
-                        #print (gs[locationX, locationY])
-                        #print(locationY - 1, locationX)
                         count +=1
                 else:
                     if ((gs[locationY, locationX - 1]) == 'D'):
-                        #print (gs[locationX, locationY])
-                        #print(locationY - 1, locationX)
                         count +=1
 
                 if (locationY - 1 < 0):
                     locationY = 0
                     if ((gs[locationY, locationX]) == 'D'):
-                        # print(gs[locationX - 1, locationY])
-                        #print(locationY, locationX - 1)
                         count +=1
                 else:
                     if ((gs[locationY -1, locationX]) == 'D'):
-                        #print(gs[locationX - 1, locationY])
-                        #print(locationY, locationX - 1)
                         count +=1
 
                 if (locationX + 1 > 3):
                     locationX = 3
                     if ((gs[locationY, locationX]) == 'D'):
-                        #print(gs[locationX, locationY + 1])
-                        #print(locationY + 1, locationX)
                         count +=1
                 else:
                     if ((gs[locationY, locationX + 1]) == 'D'):
-                        #print(gs[locationX, locationY + 1])
-                        #print(locationY + 1, locationX)
                         count +=1
 
                 if (locationY + 1 > 3):
                     locationY = 3
                     if ((gs[locationY, locationX]) == 'D'):
-                        #print(gs[locationX + 1, locationY])
-                        #print(locationY, locationX + 1)
                         count +=1
                 else:
                     if ((gs[locationY + 1, locationX]) == 'D'):
-                        #print(gs[locationX + 1, locationY])
-                        #print(locationY, locationX + 1)
                         print(count)
                         count +=1
                 print(count)
