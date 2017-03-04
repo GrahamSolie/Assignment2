@@ -6,6 +6,8 @@ def main():
     i = 0
     prog = u.util('D')
     prog.printBoard()
+    test = prog.argmax([((0,2),[((0,3),100),((10,4),2),((0,5),5)]),((1,2),[((0,1),-2),((1,0),0)])])
+    print(test)
 
     '''
     prog.move((2,2),(1,2))

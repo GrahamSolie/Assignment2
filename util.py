@@ -49,7 +49,7 @@ class util:
                         moveValue[i] = self.minimax(depth+1)
                         self.board = origBoard
 
-
+            
             return [self.argmax(maxMovePair)]
 
         elif self.isMinNode():
@@ -175,10 +175,12 @@ class util:
             bestMaxMove = ((0,0),0)
             for i in range(0, len(ns)):
                 moveList = ns[i][1]
-                for j in range(0, len(moveList)):
+                #print("best move", bestMaxMove[1], " versus: ", moveList[j][1])
+                for j in range(0, len(moveList) - 1):
                     if (bestMaxMove[1] < moveList[j][1]):
                         bestMaxMove = moveList[j]
-            return bestMaxMove
+                        piece = ns[i][0]
+            return (piece, bestMaxMove)
         else:
             return None
 
@@ -193,8 +195,11 @@ class util:
             for i in range(0, len(ns)):
                 moveList = ns[i][1]
                 for j in range(0, len(moveList)):
-                    if (bestMinMove[1] > moveList[j][1]):
-                        bestMinMove = moveList[j]
+                    try: 
+                        if (bestMinMove[1] > moveList[j][1]):
+                            bestMinMove = moveList[j] 
+                    except TypeError:
+                        break
             return bestMinMove
         else:
             return None
