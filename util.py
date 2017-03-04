@@ -21,7 +21,7 @@ class util:
 # a game state was seen before, and it it was, what its minimax value is.
 # Warning: The transposition table can fill up quickly!
 # ** SKELETON OF FUNCTIONS TAKEN FROM CODE SUPPLIED BY MICHAEL HORSCH **
-    def maxmini(self, depth):
+    def minimax(self, depth):
         origTurn = self.whoseTurn
         origBoard = self.board
         print("Depth is :", depth)
@@ -44,8 +44,8 @@ class util:
                 else:
                     for n in range(0, len(maxMoves[i])):
                         self.move(maxMoves[i][n], self.teamHuman[i]['location'])
-                        self.whoseTurn = self.togglePlayer(origTurn)
-                        moveValue[i] = self.maxmini(depth+1)[i]
+                        self.togglePlayer()
+                        moveValue[i] = self.minimax(depth+1)[i]
                         self.board = origBoard
 
             maxMovePair = list(zip(maxMoves, moveValue))
@@ -62,6 +62,7 @@ class util:
                 minMoves[i] = self.allLegalMoves(self.teamDragon[i]['location'])
 
             for i in range(0, len(minMoves)):
+                print("Depth Being Checked:", depth, "Found to be", depth == self.depthLimit)
                 if depth == self.depthLimit:
                     #NEEDS TO BE CREATED getUtility()
                     moveValue[i] = self.getUtility(self.teamDragon[i]['type'], minMoves[i][0])
@@ -69,8 +70,8 @@ class util:
                 else:
                     for n in range(0, len( minMoves[i])):
                         self.move(minMoves[i][n], self.teamDragon[i]['location'])
-                        self.whoseTurn = self.togglePlayer(origTurn)
-                        moveValue[i] = self.maxmini(depth+1)[i]
+                        self.togglePlayer()
+                        moveValue[i] = self.minimax(depth+1)[i]
                         self.board = origBoard
 
             minMovePair = list(zip(minMoves, moveValue))
@@ -149,38 +150,6 @@ class util:
             if (self.legalMove(((gamePiece[0] - 1), (gamePiece[1] + 1)), gamePiece)):
                 validMoves.append((gamePiece[0] - 1, gamePiece[1] + 1))
         return validMoves
-        
-    '''
-    def minimax(self):
-        """
-        :param self:  a Game object responding to the following methods:
-            str(): return a unique string describing the state of the game (for use in hash table)
-            isTerminal(): checks if the game is at a terminal state
-            successors(): returns a list of all legal game states that extend this one by one move
-                          in this version, the list consists of a move,state pair
-            isMinNode(): returns True if self represents a state in which Min is to move
-            isMaxNode(): returns True if self represents a state in which Max is to move
-        :return: a pair, u,m consisting of the minimax utility, and a move that obtains it
-        """
-        global transpositionTable
-        s = self.getBoard()
-        if s in transpositionTable:
-            return transpositionTable[s]
-        elif self.isTerminal():
-            u = self.utility()
-            m = None
-        else:
-            vs = [(minimax(c)[0],m) for (m,c) in self.successors()]  # strip off the move returned by minimax!
-            if self.isMaxNode():
-                u,m = argmax(vs)
-            elif self.isMinNode():
-                u,m = argmin(vs)
-            else:
-                print("Something went horribly wrong")
-                return None
-        transpositionTable[s] = u,m  # store the move and the utility in the tpt
-        return u,m
-    '''
 
     def argmax(self, ns):
         """
@@ -234,7 +203,7 @@ class util:
         :return: a list of move,state pairs that are the next possible states
         """
         blanks = self.allBlanks()
-        next = self.togglePlayer(self.whoseTurn)
+        next = self.togglePlayer()
         states = map(lambda v: self.move(v,self.whoseTurn), blanks)
         nodes = [(m,TicTacToe(s,next)) for m,s in states]  # create move,state pairs!
         return nodes
@@ -263,7 +232,7 @@ class util:
         """
         if self.cachedWin is False:
             # rows columns diagonals
-            won =     (not self.humanDict[0]['status']) or (self.humanDict[0]['location'][0] == 4)
+            won = (not self.teamHuman[0]['status']) or (self.teamHuman[0]['location'][0] == 4)
             if won:
                 self.cachedWin = True
                 self.cachedWinner = player
@@ -273,14 +242,16 @@ class util:
         else:
             return player == self.cachedWinner
 
-    def togglePlayer(self, p):
+    def togglePlayer(self):
         """
         :param p: either 'H' or 'D'
         :return:  the other player's symbol
         """
-        if p == 'H':
+        if self.whoseTurn == 'H':
+            self.whoseTurn = 'D'
             return 'D'
         else:
+            self.whoseTurn = 'D'
             return 'H'
 
 #------------------------------------------------------------------------------------------------------------
@@ -289,21 +260,16 @@ class util:
     def getUtility(self, gamePiece, local):
 
         if (gamePiece == 'K'):
-            return self.kingUtil(gamePiece, local)
+            return self.gaurdUtil(gamePiece, local)
         elif (gamePiece == 'G'):
             return self.guardUtil(gamePiece, local)
         elif (gamePiece == 'D'):
-            return self.guardUtil(gamePiece, local)
+            return self.dragonUtil(gamePiece, local)
 
     def guardUtil(self, gamePiece, local):
         maxUtil = 0
-        enemyUtil = self.enemiesAround(gamePiece, local) * -20
+        enemyUtil = self.enemiesAround(gamePiece, local) * -10
         allyUtil = self.alliesAround(gamePiece, local) * 10
-        
-        print(enemyUtil)
-        print(allyUtil)
-        
-        
         if (allyUtil > enemyUtil and allyUtil > 1):
             maxUtil = allyUtil - enemyUtil
         else:
@@ -312,20 +278,24 @@ class util:
 
     def dragonUtil(self, gamePiece, local):
         minUtil = 0
-        enemyUtil = self.enemiesAround(gamePiece, local)
-        allyUtil = self.alliesAround(gamePiece, local)	* 10
+        enemyUtil = self.enemiesAround(gamePiece, local) * 10
+        allyUtil = self.alliesAround(gamePiece, local)	* -10
         minUtil = enemyUtil + allyUtil
         return(minUtil)
 
     def kingUtil(self, gamePiece, local):
-        print(gamePiece)
-        maxUtil = self.guardUtil(gamePiece, local)
-        maxUtil = self.endUtil(gamePiece, local)
-        return (maxUtil)
+        maxUtil1 = self.guardUtil(gamePiece, local)
+        maxUtil2 = self.endUtil(gamePiece, local)
+        if (maxUtil1 > maxUtil2 and maxUtil1 > 0) or maxUtil2 < 0:
+            return maxUtil1
+        elif maxUtil2 > maxUtil1 and maxUtil2 > 0 or maxUtil1 < 0:
+            return maxUtil2
+        else:
+            print("error in kingUtil")
+            return 0;
 
     def enemiesAround(self, gamePiece, local):
         gs = self.board
-        print(gamePiece)
         if (gamePiece == 'K' or gamePiece == 'G'):
             count = 0
             for i in range (0,len(self.teamHuman)):
@@ -384,9 +354,9 @@ class util:
         if (gamePiece == 'D'):
             count = 0
             for i in range (0,len(self.teamDragon)):
-                if (self.teamDragon[i]['status'] == True):                
-                    locationY = self.teamDragon[i]['location'][0]
-                    locationX = self.teamDragon[i]['location'][1]
+                if (self.teamDragon[i]['status'] == True):
+                    locationY = local[0]
+                    locationX = local[1]
                     #print(locationX, locationY)
 
                     if (locationX - 1 < 0):
@@ -454,7 +424,7 @@ class util:
         count = 0
         if (gamePiece == 'K' or gamePiece == 'G'):
             for i in range (0,len(self.teamHuman)):
-                if (self.teamHuman[i]['status'] == True):             
+                if (self.teamHuman[i]['status'] == True):
                     locationY = local[0]
                     locationX = local[1]
                     if (locationX - 1 < 0):
@@ -509,9 +479,9 @@ class util:
         if (gamePiece == 'D'):
             count = 0
             for i in range (0,len(self.teamDragon)):
-                if (self.teamDragon[i]['status'] == True):                  
-                    locationY = self.teamDragon[i]['location'][0]
-                    locationX = self.teamDragon[i]['location'][1]
+                if (self.teamDragon[i]['status'] == True):
+                    locationY = local[0]
+                    locationX = local[1]
                     if (locationX - 1 < 0):
                         locationX = 0
                         if ((gs[locationY, locationX]) == 'D'):
@@ -709,7 +679,6 @@ class util:
             self.updateDictLocale(where, who)
            # gs = gameState.copy()
         self.takeOver(where)
-        self.printBoard()
         return gs
 
     def move2(self, where, who):
@@ -733,13 +702,13 @@ class util:
         """
         for i in range(0, len(self.teamHuman)):
             if (self.teamHuman[i]['location'] == gamePiece and self.teamHuman[i]['status']):
-                print(gamePiece)
-                print(self.teamHuman[i]['location'])
+                #print(gamePiece)
+                #print(self.teamHuman[i]['location'])
                 return True
         for i in range(0, len(self.teamDragon)):
             if (self.teamDragon[i]['location'] == gamePiece and self.teamDragon[i]['status']):
-                print(gamePiece)
-                print(self.teamDragon[i]['location'])
+                #print(gamePiece)
+                #print(self.teamDragon[i]['location'])
                 return True
         return False
 

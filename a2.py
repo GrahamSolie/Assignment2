@@ -7,7 +7,6 @@ def main():
     prog = u.util('D')
     prog.printBoard()
 
-    print('*DRUM ROLL*', prog.maxmini(0))
     '''
     prog.move((2,2),(1,2))
     prog.move((2,1),(3,1))
@@ -81,6 +80,20 @@ def turn(prog):
             print("BURNINATING THE COUNTRY SIDE!!")
         elif(uin == "quit" or uin == "Quit" or uin == "kill" or uin == "Kill"):
             break;
+        elif(uin == "play" or uin == "Play"):
+            play(prog)
         print("Please provide input (type help for more options):", end="")
+
+def play(prog):
+    startTurn = 0
+    i = 0
+    while prog.utility() == 0 and i < 50:
+            mmResult = prog.minimax(startTurn)
+            prog.move(mmResult[1], mmResult[0])
+            i = i+1
+    if prog.utility():
+        print("Humans Win!")
+    else:
+        print("Dragons Win!")
 
 main()
