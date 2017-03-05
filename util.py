@@ -25,7 +25,7 @@ class util:
         origBoard = self.board     #used to revert board after minimax recursion
 
         if self.isMaxNode():
-
+            print("IS HUMAN TURN" if self.test else "")
             origHuman = self.teamHuman
             #maxMoves: list of tuple(x,y): x:tuple location of piece, y:[] list of tuples of all possible moves for piece
             maxMoves = [None] * len(self.teamHuman)
@@ -63,7 +63,7 @@ class util:
 
                     for j in range(0, len(maxMoves[i][1])):
 
-                        moveValue[j] = ((maxMoves[i][1][j]), self.getUtility(self.teamHuman[i]['type'], maxMoves[i][1][j]))
+                        moveValue[j] = (maxMoves[i][1][j], self.getUtility(self.teamHuman[i]['type'], maxMoves[i][1][j]))
 
                     maxMovePair[i] = (maxMoves[i][0] , moveValue)
 
@@ -71,13 +71,13 @@ class util:
 
                     testpath = "path B taken" if self.test else ""
 
-                    for n in range(0, len(maxMoves[0][i])):
+                    for n in range(0, len(maxMoves[0])):
 
-                        self.move(maxMoves[i][n], self.teamHuman[i]['location'])
+                        self.move(maxMoves[i][0], self.teamHuman[i]['location'])
                         self.togglePlayer()
-                        moveValue[i] = self.minimax(depth+1)
+                        moveValue[n] = self.minimax(depth+1)
                         maxMovePair[i] = (maxMoves[i], moveValue[n])
-                        self.board = origBoard
+
 
             #TESTING PRINT3A
             print("" if self.test else "")
@@ -88,13 +88,15 @@ class util:
             print("maxMovePair:", maxMovePair if self.test else "")
             print("maxMovePair length:", len(maxMovePair) if self.test else "")
 
+            self.board = origBoard
+            self.whoseTurn = origTurn
             self.teamHuman = origHuman
             return [self.argmax(maxMovePair)]
 
 
 
         elif self.isMinNode():
-
+            print("IS DRAGON TURN" if self.test else "")
             origDragon = self.teamDragon
             #minMoves: list of tuple(x,y): x:tuple location of piece, y:[] list of tuples of all possible moves for piece
             minMoves = [None] * self.activeDragon()
@@ -132,21 +134,23 @@ class util:
 
                     for j in range(0, len(minMoves[i][1])):
 
-                        moveValue[j] = ((minMoves[i][1][j]), self.getUtility(self.teamDragon[i]['type'], minMoves[i][1][j]))
+                        moveValue[j] = (minMoves[i][1][j], self.getUtility(self.teamDragon[i]['type'], minMoves[i][1][j]))
 
                     minMovePair[i] = (minMoves[i][0] , moveValue)
+
+
 
                 else:
 
                     testpath = "path B taken" if self.test else ""
 
-                    for n in range(0, len(minMoves[i][1])):
+                    for n in range(0, len(minMoves[0])):
 
                         self.move(minMoves[i][0], self.teamDragon[i]['location'])
                         self.togglePlayer()
-                        moveValue[i] = self.minimax(depth+1)
+                        moveValue[n] = self.minimax(depth+1)
                         minMovePair[i] = (minMoves[i], moveValue[n])
-                        self.board = origBoard
+
 
             #TESTING PRINT3B
             print("" if self.test else "" )
@@ -156,9 +160,12 @@ class util:
             print("moveValue length:", len(moveValue) if self.test else "")
             print("minMovePair:", minMovePair if self.test else "")
             print("minMovePair length:", len(minMovePair) if self.test else "")
+            print("current depth:", depth if self.test else "")
 
+            self.board = origBoard
+            self.whoseTurn = origTurn
             self.teamDragon = origDragon
-            return [self.argmin(self.trimZero(minMovePair))]
+            return [self.argmin(minMovePair)]
 
         else:
 
@@ -171,31 +178,13 @@ class util:
         param: ns: a list with empty dragon entries
         return: a list identical to ns but without empty dragon entries
         """
-        count = 0
-
         for i in range(0, len(ns)):
-
-            for j in range(0, len(ns[i])-1):
-
-                if ns[i][j][1] != 0:
-
-                    count+=1
-
-        newList = [0] * count
-        count = 0
-
-        for i in range(0, len(ns)):
-
-            for j in range(0, len(ns[i])-1):
-
-                if ns[i][j][1] != 0:
-
-                    newList[count] = ns[i]
-                    count+=1
-        print("newList after zeroTrim length:", len(newList) if self.test else "")
-        print("newList after zeroTrim:", newList if self.test else "")
-        return newList
-
+            j = 0
+            while j < len(ns[i][1]):
+                if (ns[i][1][j][0] == (0,0) and ns[i][1][j][1] == 0):
+                    ns[i][1].pop()
+                else:
+                    j = j + 1
 
 
     def allLegalMoves(self, gamePiece):
@@ -341,6 +330,16 @@ class util:
 
         if (ns != None):
 
+            try:
+                length = len(ns[0][0][1])
+                if length > 0:
+
+                    return ns[0][1]
+
+            except: # if out of range
+
+                print("")
+
             bestMaxMove = ((0,0),0)
 
             for i in range(0, len(ns)):
@@ -354,7 +353,9 @@ class util:
                         bestMaxMove = moveList[j]
                         piece = ns[i][0]
 
-            return (piece, bestMaxMove)
+            returnVal = (piece, [(bestMaxMove[0], bestMaxMove[1])])
+            print("maxxxxxxx",(returnVal))
+            return returnVal
 
         else:
 
@@ -369,13 +370,24 @@ class util:
 
         if (ns != None):
 
+            try:
+
+                length = len(ns[0][0][1])
+                if length > 0:
+
+                    return ns[0][1]
+
+            except: # if out of range
+
+                print("")
+
             bestMinMove = ((0,0),0)
 
             for i in range(0, len(ns)):
 
                 moveList = ns[i][1]
                 piece = ns[i][0]
-                
+
                 for j in range(0, len(moveList)):
 
                     try:
@@ -387,8 +399,9 @@ class util:
                     except TypeError:
 
                         break
-
-            return (piece, bestMinMove)
+            returnVal = (piece, [(bestMinMove[0], bestMinMove[1])])
+            print("+++++++++",(returnVal))
+            return returnVal
 
         else:
 
@@ -1073,6 +1086,7 @@ class util:
             self.updateDictLocale(where, who)
 
         self.takeOver(where)
+        self.board = gs
         return gs
 
     def move2(self, where, who):
@@ -1087,6 +1101,7 @@ class util:
         gs[who] = ' '
         self.updateDictLocale(where, who)
         self.takeOver(where)
+        self.board = gs
         return gs
 
     def validPiece(self, gamePiece):
