@@ -77,8 +77,12 @@ def play(prog):
     startTurn = 0
     i = 0
     while prog.utility() == 0 and i < 50:
+            print("===========START OF TURN", i+1,"===========")
             mmResult = prog.minimax(startTurn)
-            print(mmResult)
+            print("===========", mmResult, "===========")
+            print("===========END OF TURN", i+1,"===========")
+            print("")
+            prog.move(mmResult[0][0], mmResult[0][1])
             i = i+1
             prog.togglePlayer()
     if prog.utility() == 1:

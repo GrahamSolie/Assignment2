@@ -76,7 +76,7 @@ class util:
                         self.move(maxMoves[i][n], self.teamHuman[i]['location'])
                         self.togglePlayer()
                         moveValue[i] = self.minimax(depth+1)
-                        minMovePair[i] = (maxMoves[i], moveValue[n])
+                        maxMovePair[i] = (maxMoves[i], moveValue[n])
                         self.board = origBoard
 
             #TESTING PRINT3A
@@ -88,6 +88,7 @@ class util:
             print("maxMovePair:", maxMovePair if self.test else "")
             print("maxMovePair length:", len(maxMovePair) if self.test else "")
 
+            self.teamHuman = origHuman
             return [self.argmax(maxMovePair)]
 
 
@@ -98,7 +99,7 @@ class util:
             #minMoves: list of tuple(x,y): x:tuple location of piece, y:[] list of tuples of all possible moves for piece
             minMoves = [None] * self.activeDragon()
             #moveValue: list of tuple(x,y): x:tuple location of one possible move, y:int utility for move location
-            moveValue = [0] * (self.activeDragon() + 8)
+            moveValue = [((0,0),0)] * (8)    #8 = max number of moves for a single dragon
             #minMovePair: list of tuple(x,y): x:tuple location of piece to be moved, y:[] list of maxValue for piece
             minMovePair = [0] * self.activeDragon()
 
@@ -141,7 +142,7 @@ class util:
 
                     for n in range(0, len(minMoves[i][1])):
 
-                        self.move(minMoves[i][0], minMoves[i][1][n])
+                        self.move(minMoves[i][0], self.teamDragon[i]['location'])
                         self.togglePlayer()
                         moveValue[i] = self.minimax(depth+1)
                         minMovePair[i] = (minMoves[i], moveValue[n])
@@ -156,6 +157,7 @@ class util:
             print("minMovePair:", minMovePair if self.test else "")
             print("minMovePair length:", len(minMovePair) if self.test else "")
 
+            self.teamDragon = origDragon
             return [self.argmin(self.trimZero(minMovePair))]
 
         else:
@@ -173,7 +175,7 @@ class util:
 
         for i in range(0, len(ns)):
 
-            for j in range(0, len(ns[i])):
+            for j in range(0, len(ns[i])-1):
 
                 if ns[i][j][1] != 0:
 
@@ -184,13 +186,14 @@ class util:
 
         for i in range(0, len(ns)):
 
-            for j in range(0, len(ns[i])):
+            for j in range(0, len(ns[i])-1):
 
                 if ns[i][j][1] != 0:
 
                     newList[count] = ns[i]
                     count+=1
-
+        print("newList after zeroTrim length:", len(newList) if self.test else "")
+        print("newList after zeroTrim:", newList if self.test else "")
         return newList
 
 
@@ -363,7 +366,7 @@ class util:
         :param ns: a list of utility,move pairs
         :return:  the move,utility pair with the lowest utility
         """
-        
+
         if (ns != None):
 
             bestMinMove = ((0,0),0)
@@ -371,7 +374,8 @@ class util:
             for i in range(0, len(ns)):
 
                 moveList = ns[i][1]
-
+                piece = ns[i][0]
+                
                 for j in range(0, len(moveList)):
 
                     try:
@@ -384,7 +388,7 @@ class util:
 
                         break
 
-            return bestMinMove
+            return (piece, bestMinMove)
 
         else:
 
