@@ -8,33 +8,12 @@ def main():
     prog.printBoard()
     test = prog.argmax([((0,2),[((0,3),100),((10,4),2),((0,5),5)]),((1,2),[((0,1),-2),((1,0),0)])])
     print(test)
-
-    '''
-    prog.move((2,2),(1,2))
-    prog.move((2,1),(3,1))
-    prog.move((2,3),(3,3))
-    prog.move((1,2),(2,2))
-    prog.move((2,0),(3,0))
-    prog.move((1,0),(2,0))
-    prog.move((2,4),(3,4))
-    prog.move((1,4),(2,4))
-    '''
-    """
-    Test To capture a Guard
-
-    prog.move((2,2),(1,2))
-    prog.move((2,1),(3,1))
-    prog.move((2,3),(3,3))
-    prog.move((1,2),(2,2))
-    prog.move((2,0),(3,0))
-    prog.move((1,0),(2,0))
-	"""
-
-    #prog.move((2,4),(3,4))
-    #prog.move((2,2),(1,2))
     print("Please provide input (type help for more options):", end="")
+
     while turn(prog):
+
         i = 1 + i
+
     print("You played ", i, " number of turns!")
 
 def turn(prog):
@@ -49,10 +28,18 @@ def turn(prog):
             print("play #: plays # number of games")
             print("play: plays a single game")
             print("move: for testing. Manually move pieces")
+            print("test: toggles the testing flag")
+
+        elif(uin == "test" or uin == "Test"):
+
+            print("Testing toggled to", prog.toggleTesting())
 
         elif(uin == "move" or uin == "Move" or uin == "move2" or uin == "Move2"):
+
             loop = True
+
             while (loop):
+
                 loop = False
                 prog.printLocation()
                 print("input piece location(in form of tuple):", end="")
