@@ -1118,7 +1118,6 @@ class util:
         :param who: location of game piece to be moved
         :return: the new state of the game board
         """
-        print("swaggurlz 4lyfe")
         gs = self.board
 
         if (self.legalMove(where, who)):
@@ -1129,6 +1128,7 @@ class util:
 
         self.takeOver(where)
         self.board = gs
+        self.printBoard()
         return gs
 
     def move2(self, where, who):

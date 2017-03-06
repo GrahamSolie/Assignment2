@@ -6,8 +6,24 @@ def main():
     i = 0
     prog = u.util('D')
     prog.printBoard()
-    test = prog.argmax([((0,2),[((0,3),100),((10,4),2),((0,5),5)]),((1,2),[((0,1),-2),((1,0),0)])])
-    print(test)
+    
+    prog.move((2,2),(1,2))
+    prog.move((2,3),(3,3))
+    prog.move((2,1),(2,2))
+    prog.move((2,0),(3,0))
+    prog.move((2,2),(3,2))
+    prog.move((0,1),(0,2))
+    prog.move((1,1),(0,2))
+    prog.move((0,1),(0,0))
+    prog.move((2,3),(3,4))
+    prog.move((1,2),(2,3))
+    prog.move((1,1),(1,2))
+
+    
+    
+    
+    #test = prog.argmax([((0,2),[((0,3),100),((10,4),2),((0,5),5)]),((1,2),[((0,1),-2),((1,0),0)])])
+    #print(test)
     print("Please provide input (type help for more options):", end="")
 
     while turn(prog):
