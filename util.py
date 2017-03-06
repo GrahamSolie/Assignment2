@@ -24,6 +24,7 @@ class util:
         origTurn = self.whoseTurn  #used to revert turn after minimax recursion
         origBoard = self.board     #used to revert board after minimax recursion
 
+        #Human's are MAX. They are trying to maximize utility assuming MIN is trying to minimize
         if self.isMaxNode():
             print("IS HUMAN TURN" if self.test else "")
             origHuman = self.teamHuman
@@ -72,7 +73,6 @@ class util:
                     testpath = "path B taken" if self.test else ""
 
                     for n in range(0, len(maxMoves[0])):
-
                         self.move(maxMoves[i][0], self.teamHuman[i]['location'])
                         self.togglePlayer()
                         moveValue[n] = self.minimax(depth+1)
@@ -94,7 +94,7 @@ class util:
             return [self.argmax(maxMovePair)]
 
 
-
+        #Dragons's are MIN. They are trying to minimize utility assuming MAX is trying to maximize
         elif self.isMinNode():
             print("IS DRAGON TURN" if self.test else "")
             origDragon = self.teamDragon
@@ -145,7 +145,6 @@ class util:
                     testpath = "path B taken" if self.test else ""
 
                     for n in range(0, len(minMoves[0])):
-
                         self.move(minMoves[i][0], self.teamDragon[i]['location'])
                         self.togglePlayer()
                         moveValue[n] = self.minimax(depth+1)
@@ -175,8 +174,12 @@ class util:
 
     def trimZero(self, ns):
         """
-        param: ns: a list with empty dragon entries
-        return: a list identical to ns but without empty dragon entries
+        used to trim the dragon dictionary since every dragon has a place holder but not every dragon is 
+        active, meaning that there will be useless 0's in the dictionary. Simply loops through
+        the dict and cuts out the ((0,0),0) tuples.
+        
+        :param: ns: a list with empty dragon entries
+        :return: a list identical to ns but without empty dragon entries
         """
         for i in range(0, len(ns)):
             j = 0
@@ -186,9 +189,13 @@ class util:
                 else:
                     j = j + 1
 
-
     def allLegalMoves(self, gamePiece):
-
+        """
+        utlilzes legalMove() to check every possible location that a gamePiece can move.
+        
+        :param: gamePiece: the board piece we are checking legal moves for
+        :return: a list of all valid moves for the given piece
+        """
         validMoves = []
         gs = self.board
 
@@ -216,7 +223,7 @@ class util:
 
                 if (gs[(gamePiece[0] + 0), (gamePiece[1] + 1)] == 'G' and gs[(gamePiece[0] + 0), (gamePiece[0] + 2)] == ' '):
 
-                    validMoves.append((gamePiece[0] + 0, gamePiece[1] + 1)) # can move right
+                    validMoves.append((gamePiece[0] + 0, gamePiece[1] + 1)) # can jump right
 
             except KeyError: # if out of range
 
@@ -226,7 +233,7 @@ class util:
 
                 if (gs[(gamePiece[0] + 0), (gamePiece[1] - 1)] == 'G' and gs[(gamePiece[0] + 0), (gamePiece[0] - 2)] == ' '):
 
-                    validMoves.append((gamePiece[0] + 0, gamePiece[1] - 1)) # can move left
+                    validMoves.append((gamePiece[0] + 0, gamePiece[1] - 1)) # can jump left
 
             except KeyError: # if out of range
 
@@ -236,7 +243,7 @@ class util:
 
                 if (gs[(gamePiece[0] + 1), (gamePiece[1] + 0)] == 'G' and gs[(gamePiece[0] + 2), (gamePiece[0] + 0)] == ' '):
 
-                    validMoves.append((gamePiece[0] + 1, gamePiece[1] + 0)) # can move down
+                    validMoves.append((gamePiece[0] + 1, gamePiece[1] + 0)) # can jump down
 
             except KeyError: # if out of range
 
@@ -246,7 +253,7 @@ class util:
 
                 if (gs[(gamePiece[0] - 1), (gamePiece[1] + 0)] == 'G' and gs[(gamePiece[0] - 2), (gamePiece[0] + 0)] == ' '):
 
-                    validMoves.append((gamePiece[0] - 1, gamePiece[1] + 0)) # can move up
+                    validMoves.append((gamePiece[0] - 1, gamePiece[1] + 0)) # can jump up
 
             except KeyError: # if out of range
 
@@ -289,28 +296,32 @@ class util:
 
                 validMoves.append((gamePiece[0] - 1, gamePiece[1] + 0)) # can move up
 
-            #diagonal alley
+            #diagonal moves
             if (self.legalMove(((gamePiece[0] + 1), (gamePiece[1] + 1)), gamePiece)):
 
-                validMoves.append((gamePiece[0] + 1, gamePiece[1] + 1))
+                validMoves.append((gamePiece[0] + 1, gamePiece[1] + 1)) # down right
 
             if (self.legalMove(((gamePiece[0] + 1), (gamePiece[1] - 1)), gamePiece)):
 
-                validMoves.append((gamePiece[0] + 1, gamePiece[1] - 1))
+                validMoves.append((gamePiece[0] + 1, gamePiece[1] - 1)) # down left
 
             if (self.legalMove(((gamePiece[0] - 1), (gamePiece[1] - 1)), gamePiece)):
 
-                validMoves.append((gamePiece[0] - 1, gamePiece[1] - 1))
+                validMoves.append((gamePiece[0] - 1, gamePiece[1] - 1)) # up left
 
             if (self.legalMove(((gamePiece[0] - 1), (gamePiece[1] + 1)), gamePiece)):
 
-                validMoves.append((gamePiece[0] - 1, gamePiece[1] + 1))
+                validMoves.append((gamePiece[0] - 1, gamePiece[1] + 1)) # up right
 
         return validMoves
 
-
+ 
     def activeDragon(self):
-
+        """
+        checks which dragons in the dictionary are currently active
+        
+        :return: how many active dragons as an integer value
+        """
         numDragons = 0
 
         for i in range(0, len(self.teamDragon)):
@@ -325,9 +336,8 @@ class util:
         """
         find the highest utility,move pair
         :param ns: a list of utility,move pairs
-        :return:  the move,utility pair with the highest utility
+        :return:  the piece location, best move location, and utility of said move
         """
-
         if (ns != None):
 
             try:
@@ -349,12 +359,13 @@ class util:
                 for j in range(0, len(moveList) - 1):
 
                     if (bestMaxMove[1] < moveList[j][1]):
-
+                        #found move with higher utility than previous best
                         bestMaxMove = moveList[j]
+                        
                         piece = ns[i][0]
-
+            # sample output: ((0,2),[(0,3),10])
             returnVal = (piece, [(bestMaxMove[0], bestMaxMove[1])])
-            print("maxxxxxxx",(returnVal))
+
             return returnVal
 
         else:
@@ -365,7 +376,7 @@ class util:
         """
         find the lowest utility,move pair
         :param ns: a list of utility,move pairs
-        :return:  the move,utility pair with the lowest utility
+        :return:  the piece location, best move location, and utility of said move
         """
 
         if (ns != None):
@@ -393,14 +404,15 @@ class util:
                     try:
 
                         if (bestMinMove[1] > moveList[j][1]):
-
+                            # found move with lower utility than previous best
                             bestMinMove = moveList[j]
 
                     except TypeError:
 
                         break
+            # sample output: ((0,2),[(0,3),10])            
             returnVal = (piece, [(bestMinMove[0], bestMinMove[1])])
-            print("+++++++++",(returnVal))
+            
             return returnVal
 
         else:
@@ -431,22 +443,10 @@ class util:
 
         return self.winFor('dragons') or self.winFor('humans')
 
-    def successors(self):
-        """ *** needed for search ***
-        :param node:  a game tree node with stored game state
-        :return: a list of move,state pairs that are the next possible states
-        """
-
-        blanks = self.allBlanks()
-        next = self.togglePlayer()
-        states = map(lambda v: self.move(v,self.whoseTurn), blanks)
-        nodes = [(m,TicTacToe(s,next)) for m,s in states]  # create move,state pairs!
-        return nodes
-
 
     def utility(self):
         """ *** needed for search ***
-        :return: 1 if win for X, -1 for win for O, 0 for draw
+        :return: 1 if win for Humans, -1 for win for Dragons, 0 for draw
         """
 
         if self.winFor('H'):
@@ -462,12 +462,13 @@ class util:
             return 0
 
 
-    # all remaining methods are to assist in the calculatiosn
-
+    # all remaining methods are to assist in the calculations
+    
     def winFor(self, player):
         """
         Check if it's a win for player.
         Note the use of a cache.  This prevents re-computation in functions isTerminal() and utility()
+        
         :param player: either 'H' or 'D'
         :return: True if king is killed or king is in 4th row
         """
@@ -492,6 +493,8 @@ class util:
 
     def togglePlayer(self):
         """
+        Switch whose turn it is.
+        
         :param p: either 'H' or 'D'
         :return:  the other player's symbol
         """
@@ -509,26 +512,36 @@ class util:
 #-------------------------------------------------------------------------------
 #                          START OF UTIL FUNCTIONS
 #-------------------------------------------------------------------------------
-
+    
     def getUtility(self, gamePiece, local):
-
+        '''
+        Helper function to used to check which utility function to call
+        :param gamePiece: piece to check
+               local: the valid move to check the utility of
+        :return: gamePiece with best found utility value
+        '''
         if (gamePiece == 'K'):
-
+            #check for king
             return self.guardUtil(gamePiece, local)
 
         elif (gamePiece == 'G'):
-
+            #check for guard
             return self.guardUtil(gamePiece, local)
 
         elif (gamePiece == 'D'):
-
+            #check for dragon
             return self.dragonUtil(gamePiece, local)
 
     def guardUtil(self, gamePiece, local):
-
+        '''
+        Get the utility value for a valid guard move * TRYING TO MAXIMIZE
+        :param gamePiece: piece to check
+               local: the valid move to check the utility of
+        :return: the best utility value
+        '''
         maxUtil = 0
-        enemyUtil = self.enemiesAround(gamePiece, local) * -10
-        allyUtil = self.alliesAround(gamePiece, local) * 10
+        enemyUtil = self.enemiesAround(gamePiece, local) * -10 # worse move the more enemies are near
+        allyUtil = self.alliesAround(gamePiece, local) * 10 # better move the more allies are near
 
         if (allyUtil > enemyUtil and allyUtil > 1):
 
@@ -541,16 +554,28 @@ class util:
         return(maxUtil)
 
     def dragonUtil(self, gamePiece, local):
-
+        '''
+        Get the utility value for a valid dragon move * TRYING TO MINIMIZE
+        Dragons focus on converting guards and prioritize killing the king
+        :param gamePiece: piece to check
+               local: the valid move to check the utility of
+        :return: the best utility value
+        '''
         minUtil = 0
-        enemyUtil = self.enemiesAround(gamePiece, local) * 10
+        enemyUtil = self.enemiesAround(gamePiece, local) * 10 
         allyUtil = self.alliesAround(gamePiece, local)	* -10
         minUtil = enemyUtil + allyUtil
         return(minUtil)
 
     def kingUtil(self, gamePiece, local):
-
-        maxUtil1 = self.guardUtil(gamePiece, local)
+        '''
+        Get the utility value for a valid king move * TRYING TO MINIMIZE
+        King focuses on not dying and getting to the end
+        :param gamePiece: piece to check
+               local: the valid move to check the utility of
+        :return: the best utility value
+        '''
+        maxUtil1 = self.guardUtil(gamePiece, local) # uses the guard utility
         maxUtil2 = self.endUtil(gamePiece, local)
 
         if (maxUtil1 > maxUtil2 and maxUtil1 > 0) or maxUtil2 < 0:
@@ -567,7 +592,12 @@ class util:
             return 0;
 
     def enemiesAround(self, gamePiece, local):
-
+        '''
+        Checks how many enemies are around a given location
+        :param gamePiece: piece to check
+               local: the movement location to check
+        :return: amount of enemies around
+        '''
         gs = self.board
 
         if (gamePiece == 'K' or gamePiece == 'G'):
@@ -755,6 +785,12 @@ class util:
 
 
     def alliesAround(self, gamePiece, local):
+        '''
+        Checks how many allies are around a given location
+        :param gamePiece: piece to check
+               local: the movement location to check
+        :return: amount of allies around
+        '''
         gs = self.board
         count = 0
 
@@ -893,7 +929,13 @@ class util:
             return(count)
 
     def endUtil(self, gamePiece, local):
-
+        '''
+        To be used to kingUtil, check how far he is from the winning state
+        The closer he gets, the better the utility to move closer
+        :param gamePiece: king piece to check
+               local: the movement location to check
+        :return: utility of current location
+        '''
         gs = self.board
 
         if (gamePiece == 'K'):
@@ -1076,7 +1118,7 @@ class util:
         :param who: location of game piece to be moved
         :return: the new state of the game board
         """
-
+        print("swaggurlz 4lyfe")
         gs = self.board
 
         if (self.legalMove(where, who)):
